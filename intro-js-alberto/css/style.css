@@ -1,0 +1,15 @@
+body {
+    height: 100svh;
+    background-image: linear-gradient(to right top, #1f0d18, #33132d, #431948, #4d2469, #4b338e, #4348a7, #335cbf, #0071d5, #0089da, #009cd1, #00acc0, #34b9b0);
+    text-align: center;
+    color: #fafafa;
+}
+
+h1,
+h2 {
+    text-align: center;
+}
+
+ul {
+    list-style: none;
+}
