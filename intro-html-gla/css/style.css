@@ -1,8 +1,0 @@
-body {
-    transition: 0.2s;
-}
-
-.active {
-    background-color: #030303;
-    color: aliceblue;
-}
