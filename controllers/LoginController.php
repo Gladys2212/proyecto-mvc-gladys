@@ -127,6 +127,8 @@ class LoginController
 
         $token = s($_GET['token']);
 
+        //debuguear($token);
+
         //Buscar usuario por su token
         $usuario = Usuario::buscarPorCampo('token', $token);
 
@@ -139,14 +141,23 @@ class LoginController
 
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
-
-
         //Leer el nuevo password y guardalo
         $password = new Usuario($_POST);
         $alertas = $password->validarPassword();
 
         if(empty($alertas)) {
-            debuguear($usuario);
+            $usuario->password = null;
+
+            $usuario->password = $password->password;
+            $usuario->hashPassword();
+            $usuario->token = null;
+            
+
+            $resultado = $usuario->guardar();
+            if(resultado) {
+                header('Location: / ');
+            }
+            //debuguear($usuario);
         }
         //debuguear($password);
         //}
@@ -212,22 +223,35 @@ class LoginController
         if (empty($usuario)) {
             //echo 'Token no válido';
             Usuario::setAlerta('error', 'Token no válido');
-            $error = true;
+            //$error = true;
+        } else {
+            //echo 'Token valido, confirmando usuario...';
+            $usuario->confirmado = 1;
+            $usuario->token = '';
+
+            // debuguear($usuario);
+            $usuario->guardar();
+            Usuario::setAlerta('exito', 'Cuenta comprobada correctamente');
         }
 
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $alertas = Usuario::getAlertas();
+        $router->render('auth/confirmar-cuenta', [
+            'alertas' => $alertas
+        ]);
+
+        //if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
             //Leer el nuevo password y guardarlo
-            $password = new Usuario($_POST);
-            $alertas = $password->validarPassword();
+            //$password = new Usuario($_POST);
+           // $alertas = $password->validarPassword();
 
             //if(empty($alertas)) {
               // debuguear($usuario);
             //}
 
-            if(empty($alertas)) {
-                $usuario->password = null;
+            //if(empty($alertas)) {
+                //$usuario->password = null;
                 //debuguear($usuario);
 
                 //$usuario->password = $password->password;
@@ -239,9 +263,9 @@ class LoginController
                  // header('Location: /');
                 //}
                 
-            }
+            //}
 
-        }
+        //}
             //Modificar a usuario confirmado
             //echo 'Token valido,confirmando usuario';
 
@@ -252,15 +276,11 @@ class LoginController
 
             //debuguear($usuario);
 
-            //$usuario->guardar();
-            //Usuario::setAlerta('exito', 'Cuenta comprobada correctamente');
+            
+
+      
+
         
-
-        //$alertas = Usuario::getAlertas();
-
-        $router->render('auth/confirmar-cuenta', [
-            'alertas' => $alertas
-        ]);
     }
 
     public static function mensaje(Router $router)
